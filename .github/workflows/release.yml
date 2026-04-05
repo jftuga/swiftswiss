@@ -65,7 +65,7 @@ jobs:
           # typed: false
           # frozen_string_literal: true
 
-          class SwiftSwiss < Formula
+          class Swiftswiss < Formula
             desc "Swiss army knife CLI tool written in Swift using only native Apple frameworks"
             homepage "https://github.com/jftuga/${APP_NAME}"
             version "${VERSION}"
