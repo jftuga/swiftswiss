@@ -1,8 +1,18 @@
 # swiftswiss
 
+![Code Base: AI Vibes](https://img.shields.io/badge/Code%20Base-AI%20Vibes%20%F0%9F%A4%A0-blue)
+
 A Swiss army knife CLI tool written in Swift using **only native Apple frameworks** — no third-party packages allowed. Inspired by [mtool](https://github.com/jftuga/mtool) (the Go equivalent).
 
 The primary goal of this project is to demonstrate how many Apple standard library frameworks can be meaningfully used in a single, compilable, actually-useful CLI tool.
+
+## AI Disclaimer
+
+This program was entirely vibe coded with **Claude Opus 4.6**. 
+As such, the author can't be held responsible for incorrect output.
+That said, it has been validated through unit tests.
+
+Every line of Swift, every subcommand, every test, the `Makefile`, `Package.swift`, and this README were generated through iterative prompting. No code was written by hand. The constraint of using only native Apple frameworks with zero third-party dependencies made this an interesting challenge for AI-assisted development — each subcommand required creative use of what macOS ships out of the box.
 
 ## Framework Usage
 
@@ -284,6 +294,18 @@ Tests/
     DiskTests.swift
 ```
 
-## License
+## Personal Project Disclosure
 
-MIT
+This program is my own original idea, conceived and developed entirely:
+
+* On my own personal time, outside of work hours
+* For my own personal benefit and use
+* On my personally owned equipment
+* Without using any employer resources, proprietary information, or trade secrets
+* Without any connection to my employer's business, products, or services
+* Independent of any duties or responsibilities of my employment
+
+This project does not relate to my employer's actual or demonstrably
+anticipated research, development, or business activities. No
+confidential or proprietary information from any employer was used
+in its creation.
