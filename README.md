@@ -39,7 +39,7 @@ Every line of Swift, every subcommand, every test, the `Makefile`, `Package.swif
 | **CoreServices** | spotlight | Spotlight index search via MDQuery |
 | **AVFoundation** | media, speak | Audio/video inspection, text-to-speech |
 | **CoreAudio** | info, media | Audio device enumeration, codec/format listing, audio file properties |
-| **Network** | net | TCP port checking, network path monitoring |
+| **Network** | net | TCP port checking, network path monitoring, TLS inspection, DNS lookup |
 | **CoreWLAN** | net, info | Wi-Fi connection details, network scanning, SSID |
 | **IOKit** | info | Battery/power source information |
 | **PDFKit** | pdf | PDF text extraction, search, split, merge, metadata |
@@ -74,7 +74,7 @@ Every line of Swift, every subcommand, every test, the `Makefile`, `Package.swif
 - **pdf** — Extract text, search, split, merge, and inspect PDF metadata
 
 ### System & Network
-- **net** — TCP port check, port range scan, network status, Wi-Fi connection details and network scanning
+- **net** — TCP port check, port range scan, network status, Wi-Fi details, TLS certificate inspection, DNS record lookup
 - **geo** — Forward geocoding (address to coordinates) and reverse geocoding
 - **info** — System info (hostname, CPU, memory, uptime), battery status, network reachability, Wi-Fi SSID, disk usage, audio devices
 - **filetype** — Identify file types, get MIME types, explore type conformance hierarchies
@@ -195,6 +195,12 @@ swiftswiss net -mode wifi
 
 # Scan for nearby Wi-Fi networks (requires Location Services)
 swiftswiss net -mode wifi -scan
+
+# Inspect TLS certificate chain
+swiftswiss net -mode tls apple.com
+
+# DNS lookup (A/AAAA, MX, TXT, NS, CNAME records)
+swiftswiss net -mode dns apple.com
 
 # System info
 swiftswiss info

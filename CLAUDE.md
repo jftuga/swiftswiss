@@ -32,7 +32,7 @@ These categories were intentionally excluded as unsuitable for a CLI tool:
 |---|-----------|--------|---------|
 | 1 | Foundation | `import Foundation` | everywhere |
 | 2 | CryptoKit | `import CryptoKit` | hash, encrypt, decrypt, generate |
-| 3 | Security | `import Security` | keychain, generate (SecRandomCopyBytes) |
+| 3 | Security | `import Security` | keychain, generate (SecRandomCopyBytes), net (TLS cert inspection) |
 | 4 | NaturalLanguage | `import NaturalLanguage` | nlp |
 | 5 | Vision | `import Vision` | ocr |
 | 6 | CoreGraphics | `import CoreGraphics` | ocr, image |
@@ -45,7 +45,7 @@ These categories were intentionally excluded as unsuitable for a CLI tool:
 | 13 | SystemConfiguration | `import SystemConfiguration` | info |
 | 14 | CoreServices | `import CoreServices` | spotlight |
 | 15 | AVFoundation | `import AVFoundation` | media, speak |
-| 16 | Network | `import Network` | net |
+| 16 | Network | `import Network` | net (port check, TLS inspection via NWConnection) |
 | 17 | IOKit | `import IOKit` | info |
 | 18 | PDFKit | `import PDFKit` | pdf |
 | 19 | CoreAudio | `import CoreAudio`, `import AudioToolbox` | info (device enumeration), media (codecs, formats, file properties) |

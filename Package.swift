@@ -11,7 +11,14 @@ let package = Package(
             dependencies: ["SwiftSwissLib"]
         ),
         .target(
+            name: "CResolv",
+            linkerSettings: [
+                .linkedLibrary("resolv"),
+            ]
+        ),
+        .target(
             name: "SwiftSwissLib",
+            dependencies: ["CResolv"],
             linkerSettings: [
                 .linkedFramework("IOKit"),
                 .linkedFramework("CoreServices"),
