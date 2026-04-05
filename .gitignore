@@ -66,4 +66,5 @@ fastlane/test_output
 .swiftpm/
 *.tar.xz
 .DS_Store
+.??*~
 

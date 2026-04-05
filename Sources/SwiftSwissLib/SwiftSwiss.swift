@@ -1,8 +1,10 @@
 import Foundation
 
 public enum SwiftSwiss {
-    public static let version = "0.1.0"
+    public static let version = "0.2.0"
     public static let name = "swiftswiss"
+    public static let url = "https://github.com/jftuga/swiftswiss"
+
 
     public static func run(_ args: [String]) async {
         guard let command = args.first else {
@@ -54,6 +56,7 @@ public enum SwiftSwiss {
 
             case "version":
                 print("\(name) v\(version)")
+                print("\(url)")
                 print("Swift \(swiftVersion())")
                 print("Frameworks: 23 Apple frameworks, 0 third-party packages")
 
@@ -114,7 +117,7 @@ public enum SwiftSwiss {
           pdf          Extract text, search, split, merge, and inspect PDFs
 
         System & Network:
-          net          Network utilities (check ports, scan, status, wifi)
+          net          Network utilities (check ports, scan, status, wifi, tls, dns)
           geo          Forward/reverse geocoding
           info         Display system, power, and network information
           filetype     Identify file types and MIME types
