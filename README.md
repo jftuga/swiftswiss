@@ -6,6 +6,8 @@ A Swiss army knife CLI tool written in Swift using **only native Apple framework
 
 The primary goal of this project is to demonstrate how many Apple standard library frameworks can be meaningfully used in a single, compilable, actually-useful CLI tool.
 
+You can verify this with `otool -L` on the compiled binary — it reveals **25 Apple framework dylibs** linked directly into the executable (the 23 listed below plus `CoreFoundation` and `CoreMedia`, which are pulled in as transitive dependencies). No third-party libraries appear in the output — only `/System/Library/Frameworks/`, `/usr/lib/`, and `/usr/lib/swift/` paths.
+
 ## AI Disclaimer
 
 This program was entirely vibe coded with **Claude Opus 4.6**. 
