@@ -20,7 +20,7 @@ public enum ImageCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-in":
@@ -423,7 +423,7 @@ public enum ImageCommand {
           histogram  Per-channel color histogram (R/G/B intensity distribution)
 
         Options:
-          -mode <mode>          Processing mode (default: info)
+          -mode, -m <mode>      Processing mode (default: info)
           -in <path>            Input image file
           -out <path>           Output image file
           -width <n>            Target width (for resize)

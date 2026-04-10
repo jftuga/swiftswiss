@@ -11,7 +11,7 @@ public enum GenerateCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-length", "-n":
@@ -112,7 +112,7 @@ public enum GenerateCommand {
         Generate passwords, UUIDs, random bytes, or symmetric keys.
 
         Options:
-          -mode <mode>      Generation mode (default: password)
+          -mode, -m <mode>  Generation mode (default: password)
                             Choices: password, uuid, bytes, key
           -length, -n <n>   Length: chars for password, bytes for bytes,
                             bits (128/192/256) for key (default: 20)

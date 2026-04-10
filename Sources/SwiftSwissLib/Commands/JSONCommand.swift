@@ -9,7 +9,7 @@ public enum JSONCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-query", "-q":
@@ -118,7 +118,7 @@ public enum JSONCommand {
           query      Query a value by dot-notation path
 
         Options:
-          -mode <mode>    Processing mode (default: pretty)
+          -mode, -m <mode>  Processing mode (default: pretty)
           -query, -q <path>  Dot-notation path for query mode (e.g., "users.0.name")
           -h, --help      Show this help
 

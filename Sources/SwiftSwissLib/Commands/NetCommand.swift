@@ -18,7 +18,7 @@ public enum NetCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-host":
@@ -951,7 +951,7 @@ public enum NetCommand {
           dns       DNS lookup: A/AAAA, MX, TXT, NS, CNAME records
 
         Options:
-          -mode <mode>       Mode (default: check)
+          -mode, -m <mode>   Mode (default: check)
           -host <hostname>   Target host (or pass as positional argument)
           -port <n>          Port number (default: 80, or 443 for tls mode)
           -end <n>           End port for scan range

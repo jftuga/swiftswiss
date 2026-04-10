@@ -10,7 +10,7 @@ public enum TimeCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-format":
@@ -172,7 +172,7 @@ public enum TimeCommand {
           zones        List all known timezones with UTC offsets
 
         Options:
-          -mode <mode>     Mode (default: now)
+          -mode, -m <mode> Mode (default: now)
           -format <fmt>    Date format string (e.g., "yyyy-MM-dd HH:mm:ss")
           -tz <timezone>   Timezone identifier (e.g., "America/New_York", "UTC")
           -h, --help       Show this help

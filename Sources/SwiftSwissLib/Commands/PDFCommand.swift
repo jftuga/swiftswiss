@@ -12,7 +12,7 @@ public enum PDFCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-in":
@@ -96,7 +96,7 @@ public enum PDFCommand {
             case "-out":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("output path") }
                 outputPath = args[i]
-            case "-mode", "-h", "--help":
+            case "-mode", "-m", "-h", "--help":
                 i += 1  // skip
             default:
                 if !args[i].hasPrefix("-") {
@@ -285,7 +285,7 @@ public enum PDFCommand {
           merge      Combine multiple PDFs into one
 
         Options:
-          -mode <mode>          Processing mode (default: info)
+          -mode, -m <mode>      Processing mode (default: info)
           -in <path>            Input PDF file
           -out <path>           Output PDF file (for split/merge)
           -pages <range>        Page range, e.g., 1-3,5,7-9 (for text/split)

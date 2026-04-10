@@ -10,7 +10,7 @@ public enum MLCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-model":
@@ -255,7 +255,7 @@ public enum MLCommand {
           predict     Run a prediction with key=value inputs
 
         Options:
-          -mode <mode>       Mode (default: info)
+          -mode, -m <mode>   Mode (default: info)
           -model <path>      Path to .mlmodel or .mlmodelc
           -input <k=v ...>   Input values for prediction (key=value pairs)
           -h, --help         Show this help

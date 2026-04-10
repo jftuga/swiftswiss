@@ -11,7 +11,7 @@ public enum MediaCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-h", "--help":
@@ -317,7 +317,7 @@ public enum MediaCommand {
           formats    List supported audio file formats and extensions
 
         Options:
-          -mode <mode>  Processing mode (default: info)
+          -mode, -m <mode>  Processing mode (default: info)
           -h, --help    Show this help
 
         Supported formats: MP4, MOV, M4A, MP3, WAV, AIFF, CAF, and more.

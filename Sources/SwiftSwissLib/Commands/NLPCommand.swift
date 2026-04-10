@@ -10,7 +10,7 @@ public enum NLPCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-t":
@@ -199,7 +199,7 @@ public enum NLPCommand {
         Use -t to provide text directly (mutually exclusive with file/stdin).
 
         Options:
-          -mode <mode>   Processing mode (default: detect)
+          -mode, -m <mode>  Processing mode (default: detect)
           -t <text>      Provide text directly instead of reading from file/stdin
           -h, --help     Show this help
 

@@ -132,6 +132,15 @@ swift test
 
 158 tests covering hash, encrypt/decrypt, NLP, JSON, time, transform, generate, compress, filetype, image, math, PDF, ML, and disk operations.
 
+## Flag Shortcuts
+
+All commands that accept `-mode` also accept `-m` as a shorthand. For example:
+
+```bash
+swiftswiss nlp -m detect -t "Bonjour le monde"
+swiftswiss pdf -m text -in document.pdf -pages 1-3
+```
+
 ## Examples
 
 ```bash

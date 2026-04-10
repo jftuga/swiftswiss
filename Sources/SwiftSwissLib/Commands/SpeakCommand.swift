@@ -11,7 +11,7 @@ public enum SpeakCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-lang":
@@ -113,7 +113,7 @@ public enum SpeakCommand {
           voices   List available voices
 
         Options:
-          -mode <mode>    Mode (default: say)
+          -mode, -m <mode>  Mode (default: say)
           -lang <code>    Voice language (e.g., en-US, fr-FR, de-DE)
           -rate <float>   Speech rate (0.0-1.0, default: ~0.5)
           -h, --help      Show this help

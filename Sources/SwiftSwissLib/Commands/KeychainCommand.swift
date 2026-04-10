@@ -13,7 +13,7 @@ public enum KeychainCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-service":
@@ -167,7 +167,7 @@ public enum KeychainCommand {
           list     List accounts for a service
 
         Options:
-          -mode <mode>        Mode (default: get)
+          -mode, -m <mode>    Mode (default: get)
           -service <name>     Keychain service name (default: com.swiftswiss)
           -account <name>     Account name (required for set/get/delete)
           -password <pass>    Password for set mode (prompted securely if omitted)

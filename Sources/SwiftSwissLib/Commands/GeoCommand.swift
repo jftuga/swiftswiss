@@ -11,7 +11,7 @@ public enum GeoCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-lat":
@@ -97,7 +97,7 @@ public enum GeoCommand {
           reverse    Convert coordinates to an address
 
         Options:
-          -mode <mode>    Mode (default: forward)
+          -mode, -m <mode>  Mode (default: forward)
           -lat <number>   Latitude for reverse geocoding
           -lon <number>   Longitude for reverse geocoding
           -h, --help      Show this help

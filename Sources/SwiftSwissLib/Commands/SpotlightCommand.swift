@@ -11,7 +11,7 @@ public enum SpotlightCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-limit":
@@ -102,7 +102,7 @@ public enum SpotlightCommand {
           author     Search by author
 
         Options:
-          -mode <mode>    Search mode (default: name)
+          -mode, -m <mode>  Search mode (default: name)
           -limit <n>      Maximum results (default: 25)
           -dir <path>     Restrict search to directory
           -h, --help      Show this help

@@ -9,7 +9,7 @@ public enum DiskCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-timeout":
@@ -254,7 +254,7 @@ extension DiskCommand {
           watch       Watch for disk appear/disappear/change events
 
         Options:
-          -mode <mode>       Mode (default: list)
+          -mode, -m <mode>   Mode (default: list)
           -timeout <secs>    Watch duration in seconds (default: 10)
           -h, --help         Show this help
 

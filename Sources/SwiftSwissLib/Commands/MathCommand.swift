@@ -10,7 +10,7 @@ public enum MathCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-in":
@@ -280,7 +280,7 @@ public enum MathCommand {
           linspace   Generate evenly spaced numbers between two endpoints
 
         Options:
-          -mode <mode>   Operation mode (default: stats)
+          -mode, -m <mode>  Operation mode (default: stats)
           -in <path>     Input file (or read from stdin; numbers separated by whitespace)
           -n <size>      FFT size (must be power of 2; auto-selected if omitted)
                          For linspace: number of points to generate (required)

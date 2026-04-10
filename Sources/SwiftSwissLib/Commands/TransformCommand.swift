@@ -10,7 +10,7 @@ public enum TransformCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-pattern":
@@ -127,7 +127,7 @@ public enum TransformCommand {
           hexdecode      Hex decode
 
         Options:
-          -mode <mode>       Transform mode (default: upper)
+          -mode, -m <mode>   Transform mode (default: upper)
           -pattern <regex>   Regex pattern for replace mode
           -replace <string>  Replacement string for replace mode
           -h, --help         Show this help
