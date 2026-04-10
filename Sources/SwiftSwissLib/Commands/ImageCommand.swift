@@ -14,6 +14,8 @@ public enum ImageCommand {
         var height: Int?
         var filterName: String?
         var filterIntensity: Double = 1.0
+        var percent: Double?
+        var quality: Double?
 
         var i = 0
         while i < args.count {
@@ -40,6 +42,22 @@ public enum ImageCommand {
             case "-filter":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("filter name") }
                 filterName = args[i]
+            case "-percent":
+                i += 1; guard i < args.count, let v = Double(args[i]) else {
+                    throw SwiftSwissError.missingArgument("percent (number)")
+                }
+                guard v > 0 else {
+                    throw SwiftSwissError.invalidOption("percent must be greater than 0")
+                }
+                percent = v
+            case "-quality":
+                i += 1; guard i < args.count, let v = Double(args[i]) else {
+                    throw SwiftSwissError.missingArgument("quality (number 0.0-1.0)")
+                }
+                guard v >= 0.0 && v <= 1.0 else {
+                    throw SwiftSwissError.invalidOption("quality must be between 0.0 and 1.0")
+                }
+                quality = v
             case "-intensity":
                 i += 1; guard i < args.count, let v = Double(args[i]) else {
                     throw SwiftSwissError.missingArgument("intensity (number)")
@@ -63,16 +81,32 @@ public enum ImageCommand {
             guard let inPath = inputPath, let outPath = outputPath else {
                 throw SwiftSwissError.missingArgument("-in and -out paths required")
             }
-            guard let w = width, let h = height else {
-                throw SwiftSwissError.missingArgument("-width and -height required")
+            if percent != nil && (width != nil || height != nil) {
+                throw SwiftSwissError.invalidOption("-percent cannot be used with -width/-height")
             }
             guard let image = OCRCommand.loadImage(from: inPath) else {
                 throw SwiftSwissError.operationFailed("cannot load image: \(inPath)")
             }
+            let w: Int
+            let h: Int
+            if let pct = percent {
+                let scale = pct / 100.0
+                w = Int(Double(image.width) * scale)
+                h = Int(Double(image.height) * scale)
+                guard w > 0 && h > 0 else {
+                    throw SwiftSwissError.invalidOption("percent too small, resulting dimensions are 0")
+                }
+            } else {
+                guard let uw = width, let uh = height else {
+                    throw SwiftSwissError.missingArgument("-width and -height, or -percent required")
+                }
+                w = uw
+                h = uh
+            }
             guard let resized = resize(image: image, width: w, height: h) else {
                 throw SwiftSwissError.operationFailed("resize failed")
             }
-            try saveImage(resized, to: outPath)
+            try saveImage(resized, to: outPath, compressionQuality: quality)
             print("Resized to \(w)x\(h) → \(outPath)")
 
         case "convert":
@@ -82,7 +116,7 @@ public enum ImageCommand {
             guard let image = OCRCommand.loadImage(from: inPath) else {
                 throw SwiftSwissError.operationFailed("cannot load image: \(inPath)")
             }
-            try saveImage(image, to: outPath)
+            try saveImage(image, to: outPath, compressionQuality: quality)
             print("Converted → \(outPath)")
 
         case "filter":
@@ -98,7 +132,7 @@ public enum ImageCommand {
             guard let filtered = applyFilter(image: image, name: fName, intensity: filterIntensity) else {
                 throw SwiftSwissError.operationFailed("filter failed: \(fName)")
             }
-            try saveImage(filtered, to: outPath)
+            try saveImage(filtered, to: outPath, compressionQuality: quality)
             print("Applied \(fName) filter → \(outPath)")
 
         case "histogram":
@@ -230,7 +264,7 @@ public enum ImageCommand {
 
     // MARK: - Save (ImageIO + UniformTypeIdentifiers)
 
-    public static func saveImage(_ image: CGImage, to path: String) throws {
+    public static func saveImage(_ image: CGImage, to path: String, compressionQuality: Double? = nil) throws {
         let url = URL(fileURLWithPath: path) as CFURL
         let ext = (path as NSString).pathExtension.lowercased()
 
@@ -249,7 +283,11 @@ public enum ImageCommand {
         guard let dest = CGImageDestinationCreateWithURL(url, utType.identifier as CFString, 1, nil) else {
             throw SwiftSwissError.operationFailed("cannot create image destination")
         }
-        CGImageDestinationAddImage(dest, image, nil)
+        var properties: CFDictionary? = nil
+        if let quality = compressionQuality {
+            properties = [kCGImageDestinationLossyCompressionQuality: quality] as CFDictionary
+        }
+        CGImageDestinationAddImage(dest, image, properties)
         guard CGImageDestinationFinalize(dest) else {
             throw SwiftSwissError.operationFailed("failed to write image to \(path)")
         }
@@ -378,7 +416,7 @@ public enum ImageCommand {
 
         Modes:
           info       Display image metadata (default)
-          resize     Resize an image (-width, -height required)
+          resize     Resize an image (-width/-height or -percent required)
           convert    Convert between formats (determined by output extension)
           filter     Apply a Core Image filter (-filter required)
           filters    List available filter names
@@ -390,6 +428,8 @@ public enum ImageCommand {
           -out <path>           Output image file
           -width <n>            Target width (for resize)
           -height <n>           Target height (for resize)
+          -percent <n>          Resize by percentage (e.g., 75, 125)
+          -quality <0.0-1.0>    Compression quality for lossy formats (JPEG, HEIC)
           -filter <name>        Filter name (e.g., sepia, blur, noir, invert)
           -intensity <0.0-1.0>  Filter intensity (default: 1.0)
           -h, --help            Show this help

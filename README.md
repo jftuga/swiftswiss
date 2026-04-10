@@ -68,7 +68,7 @@ Every line of Swift, every subcommand, every test, the `Makefile`, `Package.swif
 
 ### Media & Image
 - **ocr** — Extract text from images (PNG, JPEG, TIFF, HEIC) via OCR
-- **image** — Resize, convert formats, apply Core Image filters, inspect EXIF metadata, per-channel color histogram
+- **image** — Resize (by dimensions or percentage), convert formats (with compression quality control for JPEG/HEIC), apply Core Image filters, inspect EXIF metadata, per-channel color histogram
 - **media** — Inspect audio/video files: duration, tracks, codecs, sample rates, metadata; list system audio codecs and formats
 - **speak** — Text-to-speech synthesis with voice selection and rate control
 - **pdf** — Extract text, search, split, merge, and inspect PDF metadata
@@ -130,7 +130,7 @@ The optimized binary will be at `.build/release/swiftswiss`.
 swift test
 ```
 
-150 tests covering hash, encrypt/decrypt, NLP, JSON, time, transform, generate, compress, filetype, image, math, PDF, ML, and disk operations.
+158 tests covering hash, encrypt/decrypt, NLP, JSON, time, transform, generate, compress, filetype, image, math, PDF, ML, and disk operations.
 
 ## Examples
 
@@ -149,6 +149,15 @@ echo "3 4" | swiftswiss math -mode norm
 
 # Generate evenly spaced numbers
 echo "0 100" | swiftswiss math -mode linspace -n 11
+
+# Resize an image to 75% of original size
+swiftswiss image -mode resize -in photo.png -out small.png -percent 75
+
+# Resize an image to exact dimensions
+swiftswiss image -mode resize -in photo.png -out resized.png -width 800 -height 600
+
+# Convert PNG to JPEG with compression quality
+swiftswiss image -mode convert -in photo.png -out photo.jpg -quality 0.8
 
 # Image color histogram
 swiftswiss image -mode histogram photo.png
