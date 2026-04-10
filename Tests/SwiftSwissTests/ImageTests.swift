@@ -94,6 +94,68 @@ final class ImageTests: XCTestCase {
         XCTAssertNotNil(filtered)
     }
 
+    // MARK: - Resize by percentage
+
+    func testResizeByPercentageDownscale() throws {
+        guard let image = createTestImage(width: 200, height: 100) else {
+            XCTFail("Failed to create test image"); return
+        }
+        // 50% should give 100x50
+        let scale = 50.0 / 100.0
+        let w = Int(Double(image.width) * scale)
+        let h = Int(Double(image.height) * scale)
+        guard let resized = ImageCommand.resize(image: image, width: w, height: h) else {
+            XCTFail("Resize returned nil"); return
+        }
+        XCTAssertEqual(resized.width, 100)
+        XCTAssertEqual(resized.height, 50)
+    }
+
+    func testResizeByPercentageUpscale() throws {
+        guard let image = createTestImage(width: 80, height: 60) else {
+            XCTFail("Failed to create test image"); return
+        }
+        // 150% should give 120x90
+        let scale = 150.0 / 100.0
+        let w = Int(Double(image.width) * scale)
+        let h = Int(Double(image.height) * scale)
+        guard let resized = ImageCommand.resize(image: image, width: w, height: h) else {
+            XCTFail("Resize returned nil"); return
+        }
+        XCTAssertEqual(resized.width, 120)
+        XCTAssertEqual(resized.height, 90)
+    }
+
+    func testResizePercentViaCLI() throws {
+        guard let image = createTestImage(width: 200, height: 100) else {
+            XCTFail("Failed to create test image"); return
+        }
+        let dir = NSTemporaryDirectory()
+        let inPath = (dir as NSString).appendingPathComponent("pct_in.png")
+        let outPath = (dir as NSString).appendingPathComponent("pct_out.png")
+        defer {
+            try? FileManager.default.removeItem(atPath: inPath)
+            try? FileManager.default.removeItem(atPath: outPath)
+        }
+        try ImageCommand.saveImage(image, to: inPath)
+
+        let output = captureStdout {
+            try! ImageCommand.run(["-mode", "resize", "-in", inPath, "-out", outPath, "-percent", "50"])
+        }
+        XCTAssertTrue(output.contains("Resized to 100x50"))
+        guard let loaded = OCRCommand.loadImage(from: outPath) else {
+            XCTFail("Failed to load resized image"); return
+        }
+        XCTAssertEqual(loaded.width, 100)
+        XCTAssertEqual(loaded.height, 50)
+    }
+
+    func testResizePercentMutuallyExclusiveWithDimensions() {
+        XCTAssertThrowsError(
+            try ImageCommand.run(["-mode", "resize", "-in", "a.png", "-out", "b.png", "-percent", "50", "-width", "100", "-height", "100"])
+        )
+    }
+
     // MARK: - Histogram (Accelerate / vImage)
 
     func testHistogramRedImage() throws {
@@ -155,6 +217,78 @@ final class ImageTests: XCTestCase {
         XCTAssertTrue(output.contains("Red channel:"))
         XCTAssertTrue(output.contains("Green channel:"))
         XCTAssertTrue(output.contains("Blue channel:"))
+    }
+
+    // MARK: - Compression quality
+
+    func testJPEGQualityAffectsFileSize() throws {
+        guard let image = createTestImage(width: 200, height: 200) else {
+            XCTFail("Failed to create test image"); return
+        }
+
+        let dir = NSTemporaryDirectory()
+        let highPath = (dir as NSString).appendingPathComponent("quality_high.jpg")
+        let lowPath = (dir as NSString).appendingPathComponent("quality_low.jpg")
+        defer {
+            try? FileManager.default.removeItem(atPath: highPath)
+            try? FileManager.default.removeItem(atPath: lowPath)
+        }
+
+        try ImageCommand.saveImage(image, to: highPath, compressionQuality: 1.0)
+        try ImageCommand.saveImage(image, to: lowPath, compressionQuality: 0.1)
+
+        let highSize = try FileManager.default.attributesOfItem(atPath: highPath)[.size] as! UInt64
+        let lowSize = try FileManager.default.attributesOfItem(atPath: lowPath)[.size] as! UInt64
+
+        XCTAssertGreaterThan(highSize, lowSize, "High quality JPEG should be larger than low quality")
+    }
+
+    func testQualityDefaultProducesValidImage() throws {
+        guard let image = createTestImage() else { XCTFail("Failed to create test image"); return }
+
+        let dir = NSTemporaryDirectory()
+        let path = (dir as NSString).appendingPathComponent("quality_default.jpg")
+        defer { try? FileManager.default.removeItem(atPath: path) }
+
+        // No quality specified — should use default
+        try ImageCommand.saveImage(image, to: path)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
+
+        guard let loaded = OCRCommand.loadImage(from: path) else {
+            XCTFail("Failed to load saved image"); return
+        }
+        XCTAssertEqual(loaded.width, 100)
+    }
+
+    func testQualityViaCLIConvert() throws {
+        guard let image = createTestImage(width: 200, height: 200) else {
+            XCTFail("Failed to create test image"); return
+        }
+
+        let dir = NSTemporaryDirectory()
+        let inPath = (dir as NSString).appendingPathComponent("quality_cli_in.png")
+        let outPath = (dir as NSString).appendingPathComponent("quality_cli_out.jpg")
+        defer {
+            try? FileManager.default.removeItem(atPath: inPath)
+            try? FileManager.default.removeItem(atPath: outPath)
+        }
+
+        try ImageCommand.saveImage(image, to: inPath)
+
+        let output = captureStdout {
+            try! ImageCommand.run(["-mode", "convert", "-in", inPath, "-out", outPath, "-quality", "0.5"])
+        }
+        XCTAssertTrue(output.contains("Converted"))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: outPath))
+    }
+
+    func testQualityOutOfRangeThrows() {
+        XCTAssertThrowsError(
+            try ImageCommand.run(["-mode", "convert", "-in", "a.png", "-out", "b.jpg", "-quality", "1.5"])
+        )
+        XCTAssertThrowsError(
+            try ImageCommand.run(["-mode", "convert", "-in", "a.png", "-out", "b.jpg", "-quality", "-0.1"])
+        )
     }
 
     func testUnsupportedOutputFormat() {

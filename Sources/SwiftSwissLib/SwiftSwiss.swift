@@ -1,7 +1,7 @@
 import Foundation
 
 public enum SwiftSwiss {
-    public static let version = "0.2.1"
+    public static let version = "0.3.0"
     public static let name = "swiftswiss"
     public static let url = "https://github.com/jftuga/swiftswiss"
 
