@@ -1,7 +1,7 @@
 import Foundation
 
 public enum SwiftSwiss {
-    public static let version = "0.3.0"
+    public static let version = "0.4.0"
     public static let name = "swiftswiss"
     public static let url = "https://github.com/jftuga/swiftswiss"
 
@@ -37,7 +37,7 @@ public enum SwiftSwiss {
             case "media":      try await MediaCommand.run(commandArgs)
             case "speak":      try SpeakCommand.run(commandArgs)
             case "pdf":
-                if commandArgs.contains("-mode") && commandArgs.contains("merge") {
+                if (commandArgs.contains("-mode") || commandArgs.contains("-m")) && commandArgs.contains("merge") {
                     try PDFCommand.runMerge(args: commandArgs)
                 } else {
                     try PDFCommand.run(commandArgs)

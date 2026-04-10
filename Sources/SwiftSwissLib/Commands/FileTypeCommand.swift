@@ -9,7 +9,7 @@ public enum FileTypeCommand {
         var i = 0
         while i < args.count {
             switch args[i] {
-            case "-mode":
+            case "-mode", "-m":
                 i += 1; guard i < args.count else { throw SwiftSwissError.missingArgument("mode") }
                 mode = args[i]
             case "-h", "--help":
@@ -126,7 +126,7 @@ public enum FileTypeCommand {
           extensions  Get extension for a MIME type
 
         Options:
-          -mode <mode>    Mode (default: identify)
+          -mode, -m <mode>  Mode (default: identify)
           -h, --help      Show this help
 
         Examples:
