@@ -218,6 +218,11 @@ public enum ImageCommand {
 
     public static func resize(image: CGImage, width: Int, height: Int) -> CGImage? {
         let colorSpace = image.colorSpace ?? CGColorSpaceCreateDeviceRGB()
+        let hasAlpha: Bool = switch image.alphaInfo {
+        case .premultipliedLast, .premultipliedFirst, .last, .first, .alphaOnly: true
+        default: false
+        }
+        let alphaInfo: CGImageAlphaInfo = hasAlpha ? .premultipliedLast : .noneSkipLast
         guard let context = CGContext(
             data: nil,
             width: width,
@@ -225,7 +230,7 @@ public enum ImageCommand {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: alphaInfo.rawValue
         ) else { return nil }
 
         context.interpolationQuality = .high

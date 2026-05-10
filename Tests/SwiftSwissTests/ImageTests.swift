@@ -25,6 +25,41 @@ final class ImageTests: XCTestCase {
         return context.makeImage()
     }
 
+    func createOpaqueTestImage(width: Int = 100, height: Int = 100) -> CGImage? {
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(
+            data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+        ) else { return nil }
+        context.setFillColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        return context.makeImage()
+    }
+
+    func testResizeOpaqueImagePreservesNoAlpha() throws {
+        guard let image = createOpaqueTestImage(width: 200, height: 200) else {
+            XCTFail("Failed to create opaque test image"); return
+        }
+        let alphaInfo = image.alphaInfo
+        XCTAssertTrue(alphaInfo == .none || alphaInfo == .noneSkipLast || alphaInfo == .noneSkipFirst)
+
+        guard let resized = ImageCommand.resize(image: image, width: 100, height: 100) else {
+            XCTFail("Resize returned nil"); return
+        }
+        let resizedAlpha = resized.alphaInfo
+        XCTAssertTrue(resizedAlpha == .none || resizedAlpha == .noneSkipLast || resizedAlpha == .noneSkipFirst, "Resized opaque image should not have alpha, got \(resizedAlpha)")
+    }
+
+    func testResizeAlphaImagePreservesAlpha() throws {
+        guard let image = createTestImage(width: 200, height: 200) else {
+            XCTFail("Failed to create test image"); return
+        }
+        guard let resized = ImageCommand.resize(image: image, width: 100, height: 100) else {
+            XCTFail("Resize returned nil"); return
+        }
+        let resizedAlpha = resized.alphaInfo
+        XCTAssertTrue(resizedAlpha == .premultipliedLast || resizedAlpha == .premultipliedFirst || resizedAlpha == .last || resizedAlpha == .first, "Resized alpha image should retain alpha, got \(resizedAlpha)")
+    }
+
     func testResize() throws {
         guard let image = createTestImage(width: 200, height: 200) else {
             XCTFail("Failed to create test image"); return
