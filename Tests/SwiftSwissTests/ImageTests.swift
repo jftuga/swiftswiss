@@ -150,6 +150,69 @@ final class ImageTests: XCTestCase {
         XCTAssertEqual(loaded.height, 50)
     }
 
+    // MARK: - Resize -force
+
+    func testResizeForceOverwritesInPlace() throws {
+        guard let image = createTestImage(width: 200, height: 200) else {
+            XCTFail("Failed to create test image"); return
+        }
+        let dir = NSTemporaryDirectory()
+        let path = (dir as NSString).appendingPathComponent("force_resize.png")
+        defer { try? FileManager.default.removeItem(atPath: path) }
+        try ImageCommand.saveImage(image, to: path)
+
+        let output = captureStdout {
+            try! ImageCommand.run(["-mode", "resize", "-in", path, "-percent", "50", "-force"])
+        }
+        XCTAssertTrue(output.contains("Resized to 100x100"))
+        XCTAssertTrue(output.contains("(overwritten)"))
+        guard let loaded = OCRCommand.loadImage(from: path) else {
+            XCTFail("Failed to load resized image"); return
+        }
+        XCTAssertEqual(loaded.width, 100)
+        XCTAssertEqual(loaded.height, 100)
+    }
+
+    func testResizeForcePreservesMtime() throws {
+        guard let image = createTestImage(width: 200, height: 200) else {
+            XCTFail("Failed to create test image"); return
+        }
+        let dir = NSTemporaryDirectory()
+        let path = (dir as NSString).appendingPathComponent("force_mtime.png")
+        defer { try? FileManager.default.removeItem(atPath: path) }
+        try ImageCommand.saveImage(image, to: path)
+
+        let pastDate = Date(timeIntervalSince1970: 1_000_000_000)
+        try FileManager.default.setAttributes([.modificationDate: pastDate], ofItemAtPath: path)
+
+        _ = captureStdout {
+            try! ImageCommand.run(["-mode", "resize", "-in", path, "-percent", "50", "-force"])
+        }
+
+        let attrs = try FileManager.default.attributesOfItem(atPath: path)
+        let mtime = attrs[.modificationDate] as! Date
+        XCTAssertEqual(mtime.timeIntervalSince1970, pastDate.timeIntervalSince1970, accuracy: 1.0)
+    }
+
+    func testResizeForceMissingInThrows() {
+        XCTAssertThrowsError(
+            try ImageCommand.run(["-mode", "resize", "-force", "-percent", "50"])
+        )
+    }
+
+    func testResizeForceWithOutThrows() throws {
+        guard let image = createTestImage() else { XCTFail("Failed to create test image"); return }
+        let dir = NSTemporaryDirectory()
+        let inPath = (dir as NSString).appendingPathComponent("force_in.png")
+        let outPath = (dir as NSString).appendingPathComponent("force_out.png")
+        defer { try? FileManager.default.removeItem(atPath: inPath) }
+        try ImageCommand.saveImage(image, to: inPath)
+
+        XCTAssertThrowsError(
+            try ImageCommand.run(["-mode", "resize", "-in", inPath, "-out", outPath, "-percent", "50", "-force"])
+        )
+    }
+
     func testResizePercentMutuallyExclusiveWithDimensions() {
         XCTAssertThrowsError(
             try ImageCommand.run(["-mode", "resize", "-in", "a.png", "-out", "b.png", "-percent", "50", "-width", "100", "-height", "100"])

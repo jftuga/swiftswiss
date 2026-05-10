@@ -68,7 +68,7 @@ Every line of Swift, every subcommand, every test, the `Makefile`, `Package.swif
 
 ### Media & Image
 - **ocr** — Extract text from images (PNG, JPEG, TIFF, HEIC) via OCR
-- **image** — Resize (by dimensions or percentage), convert formats (with compression quality control for JPEG/HEIC), apply Core Image filters, inspect EXIF metadata, per-channel color histogram
+- **image** — Resize (by dimensions or percentage; `-force` to overwrite in place while preserving mtime), convert formats (with compression quality control for JPEG/HEIC), apply Core Image filters, inspect EXIF metadata, per-channel color histogram
 - **media** — Inspect audio/video files: duration, tracks, codecs, sample rates, metadata; list system audio codecs and formats
 - **speak** — Text-to-speech synthesis with voice selection and rate control
 - **pdf** — Extract text, search, split, merge, and inspect PDF metadata
@@ -161,6 +161,9 @@ echo "0 100" | swiftswiss math -mode linspace -n 11
 
 # Resize an image to 75% of original size
 swiftswiss image -mode resize -in photo.png -out small.png -percent 75
+
+# Resize an image in place (overwrites input, preserves mtime)
+swiftswiss image -mode resize -in photo.png -percent 80 -force
 
 # Resize an image to exact dimensions
 swiftswiss image -mode resize -in photo.png -out resized.png -width 800 -height 600
