@@ -16,6 +16,7 @@ public enum ImageCommand {
         var filterIntensity: Double = 1.0
         var percent: Double?
         var quality: Double?
+        var force = false
 
         var i = 0
         while i < args.count {
@@ -63,6 +64,8 @@ public enum ImageCommand {
                     throw SwiftSwissError.missingArgument("intensity (number)")
                 }
                 filterIntensity = v
+            case "-force":
+                force = true
             case "-h", "--help":
                 printHelp(); return
             default:
@@ -78,8 +81,14 @@ public enum ImageCommand {
             try printMetadata(path: path)
 
         case "resize":
-            guard let inPath = inputPath, let outPath = outputPath else {
-                throw SwiftSwissError.missingArgument("-in and -out paths required")
+            guard let inPath = inputPath else {
+                throw SwiftSwissError.missingArgument("-in path required")
+            }
+            if force && outputPath != nil {
+                throw SwiftSwissError.invalidOption("-force and -out are mutually exclusive")
+            }
+            if !force && outputPath == nil {
+                throw SwiftSwissError.missingArgument("-out path required (or use -force to overwrite input)")
             }
             if percent != nil && (width != nil || height != nil) {
                 throw SwiftSwissError.invalidOption("-percent cannot be used with -width/-height")
@@ -106,8 +115,21 @@ public enum ImageCommand {
             guard let resized = resize(image: image, width: w, height: h) else {
                 throw SwiftSwissError.operationFailed("resize failed")
             }
-            try saveImage(resized, to: outPath, compressionQuality: quality)
-            print("Resized to \(w)x\(h) → \(outPath)")
+            if force {
+                let attrs = try FileManager.default.attributesOfItem(atPath: inPath)
+                let mtime = attrs[.modificationDate] as! Date
+                let ext = (inPath as NSString).pathExtension
+                let base = (inPath as NSString).deletingPathExtension
+                let tmpPath = base + "_swiftswiss_tmp." + ext
+                try saveImage(resized, to: tmpPath, compressionQuality: quality)
+                try FileManager.default.removeItem(atPath: inPath)
+                try FileManager.default.moveItem(atPath: tmpPath, toPath: inPath)
+                try FileManager.default.setAttributes([.modificationDate: mtime], ofItemAtPath: inPath)
+                print("Resized to \(w)x\(h) → \(inPath) (overwritten)")
+            } else {
+                try saveImage(resized, to: outputPath!, compressionQuality: quality)
+                print("Resized to \(w)x\(h) → \(outputPath!)")
+            }
 
         case "convert":
             guard let inPath = inputPath, let outPath = outputPath else {
@@ -429,6 +451,7 @@ public enum ImageCommand {
           -width <n>            Target width (for resize)
           -height <n>           Target height (for resize)
           -percent <n>          Resize by percentage (e.g., 75, 125)
+          -force                Overwrite input file in place (resize only, preserves mtime)
           -quality <0.0-1.0>    Compression quality for lossy formats (JPEG, HEIC)
           -filter <name>        Filter name (e.g., sepia, blur, noir, invert)
           -intensity <0.0-1.0>  Filter intensity (default: 1.0)
